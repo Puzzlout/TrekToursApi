@@ -1,2 +1,2 @@
 # TrekToursApi
-A dedicated repository for the Trek tours business logic.
+A REST API for the Trek tours business logic.
