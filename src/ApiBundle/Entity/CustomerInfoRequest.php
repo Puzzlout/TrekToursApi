@@ -56,7 +56,7 @@ class CustomerInfoRequest
     /**
      * @var integer
      *
-     * @ORM\Column(name="phone_number", type="string")
+     * @ORM\Column(name="phone_number", type="string", nullable=true)
      * @Serializer\Groups({"details"})
      */
     private $phoneNumber;
@@ -234,7 +234,9 @@ class CustomerInfoRequest
      */
     public function setStatus($status)
     {
-        $this->status = $status;
+        if($status == self::STATUS_TBP || $status == self::STATUS_RQC || $status == self::STATUS_RTC) {
+            $this->status = $status;
+        }
 
         return $this;
     }
