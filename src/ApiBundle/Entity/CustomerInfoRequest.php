@@ -4,12 +4,14 @@ namespace ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * CustomerInfoRequest
  *
  * @ORM\Entity
  * @ORM\Table(name="customer_info_request")
+ * @ORM\Entity(repositoryClass="ApiBundle\Repository\CustomerInfoRequest")
  */
 class CustomerInfoRequest
 {
@@ -54,7 +56,7 @@ class CustomerInfoRequest
     /**
      * @var integer
      *
-     * @ORM\Column(name="phone_number", type="integer")
+     * @ORM\Column(name="phone_number", type="string")
      * @Serializer\Groups({"details"})
      */
     private $phoneNumber;
@@ -74,6 +76,24 @@ class CustomerInfoRequest
      * @Serializer\Groups({"list", "details"})
      */
     protected $status;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created", type="datetime")
+     * @Gedmo\Timestampable(on="create")
+     * @Serializer\Groups({"list", "details"})
+     */
+    protected $created;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated", type="datetime")
+     * @Gedmo\Timestampable(on="update")
+     * @Serializer\Groups({"list", "details"})
+     */
+    protected $updated;
 
     /**
      * Get id
@@ -227,5 +247,53 @@ class CustomerInfoRequest
     public function getStatus()
     {
         return $this->status;
+    }
+
+    /**
+     * Set created
+     *
+     * @param \DateTime $created
+     *
+     * @return CustomerInfoRequest
+     */
+    public function setCreated($created)
+    {
+        $this->created = $created;
+
+        return $this;
+    }
+
+    /**
+     * Get created
+     *
+     * @return \DateTime
+     */
+    public function getCreated()
+    {
+        return $this->created;
+    }
+
+    /**
+     * Set updated
+     *
+     * @param \DateTime $updated
+     *
+     * @return CustomerInfoRequest
+     */
+    public function setUpdated($updated)
+    {
+        $this->updated = $updated;
+
+        return $this;
+    }
+
+    /**
+     * Get updated
+     *
+     * @return \DateTime
+     */
+    public function getUpdated()
+    {
+        return $this->updated;
     }
 }
