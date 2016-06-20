@@ -77,6 +77,9 @@ fos_rest:
         enabled: force
     view:
         view_response_listener: force
+        exception_wrapper_handler: ApiBundle\Handler\RestExceptionHandler
+    exception:
+        enabled: true
 
 
 fos_user:
@@ -102,3 +105,8 @@ nelmio_cors:
             max_age: 3600
 
 nelmio_api_doc: ~
+
+stof_doctrine_extensions:
+    orm:
+        default:
+            timestampable: true
