@@ -25,9 +25,9 @@ class CustomerInfoRequestController extends FOSRestController
      *     requirements = "^(19|20)\d\d[-/.](0[1-9]|1[012])[-/.](0[1-9]|[12][0-9]|3[01])$",
      *     description = "From date (yyyy-mm-dd format).")
      * @Rest\QueryParam(
-     *     name="to",
-     *     requirements="^(19|20)\d\d[-/.](0[1-9]|1[012])[-/.](0[1-9]|[12][0-9]|3[01])$",
-     *     description="To date (yyyy-mm-dd format).")
+     *     name = "to",
+     *     requirements = "^(19|20)\d\d[-/.](0[1-9]|1[012])[-/.](0[1-9]|[12][0-9]|3[01])$",
+     *     description = "To date (yyyy-mm-dd format).")
      * @ApiDoc(
      *  resource = true,
      *  requirements = {
@@ -250,6 +250,7 @@ class CustomerInfoRequestController extends FOSRestController
 
         $em = $this->getDoctrine()->getManager();
         $repository = $em->getRepository('ApiBundle:CustomerInfoRequest');
+
         $customerInfoRequest = $repository->find($id);
         if(is_null($customerInfoRequest)) {
             $view->setStatusCode(Response::HTTP_NOT_FOUND);
