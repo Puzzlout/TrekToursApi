@@ -17,7 +17,7 @@ class CustomerInfoRequestController extends FOSRestController
      * @param ParamFetcher $paramFetcher
      * @return View
      *
-     * @Rest\Get("/customer/getInfoRequests.{_format}", name="api_get_customerinforequests")
+     * @Rest\Get("/customerinforequests.{_format}", name="api_get_customerinforequests")
      * @Rest\QueryParam(name = "limit", requirements = "\d+", default = 10, description = "Number of results.")
      * @Rest\QueryParam(name = "offset", requirements = "\d+", default = 0, description = "Result offset.")
      * @Rest\QueryParam(
@@ -25,9 +25,9 @@ class CustomerInfoRequestController extends FOSRestController
      *     requirements = "^(19|20)\d\d[-/.](0[1-9]|1[012])[-/.](0[1-9]|[12][0-9]|3[01])$",
      *     description = "From date (yyyy-mm-dd format).")
      * @Rest\QueryParam(
-     *     name="to",
-     *     requirements="^(19|20)\d\d[-/.](0[1-9]|1[012])[-/.](0[1-9]|[12][0-9]|3[01])$",
-     *     description="To date (yyyy-mm-dd format).")
+     *     name = "to",
+     *     requirements = "^(19|20)\d\d[-/.](0[1-9]|1[012])[-/.](0[1-9]|[12][0-9]|3[01])$",
+     *     description = "To date (yyyy-mm-dd format).")
      * @ApiDoc(
      *  resource = true,
      *  requirements = {
@@ -65,7 +65,7 @@ class CustomerInfoRequestController extends FOSRestController
      * @param ParamFetcher $paramFetcher
      * @return View
      *
-     * @Rest\Get("/customer/getInfoRequest/{id}.{_format}", name="api_get_customerinforequest" ,
+     * @Rest\Get("/customerinforequests/{id}.{_format}", name="api_get_customerinforequest" ,
      *     requirements = { "id" = "\d+"})
      * @ApiDoc(
      *  resource = true,
@@ -102,7 +102,7 @@ class CustomerInfoRequestController extends FOSRestController
      * @param ParamFetcher $paramFetcher
      * @return View
      *
-     * @Rest\Post("/customer/addInfoRequest.{_format}", name="api_post_customerinforequests")
+     * @Rest\Post("/customerinforequests.{_format}", name="api_post_customerinforequests")
      * @Rest\RequestParam(
      *      name = "email",
      *      nullable = false,
@@ -222,7 +222,7 @@ class CustomerInfoRequestController extends FOSRestController
      * @var ParamFetcher $paramFetcher
      * @return View
      *
-     * @Rest\Patch("/customer/updateInfoRequestStatus/{id}/status.{_format}", name="api_patch_customerinforequests")
+     * @Rest\Patch("/customerinforequests/{id}/status.{_format}", name="api_patch_customerinforequests")
      * @Rest\RequestParam(
      *     name = "status",
      *     nullable  = false,
@@ -250,6 +250,7 @@ class CustomerInfoRequestController extends FOSRestController
 
         $em = $this->getDoctrine()->getManager();
         $repository = $em->getRepository('ApiBundle:CustomerInfoRequest');
+
         $customerInfoRequest = $repository->find($id);
         if(is_null($customerInfoRequest)) {
             $view->setStatusCode(Response::HTTP_NOT_FOUND);
