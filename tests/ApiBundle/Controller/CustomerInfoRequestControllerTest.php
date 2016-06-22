@@ -28,7 +28,10 @@ class CustomerInfoRequestControllerTest extends WebTestCase
             ));
         $postResponse = $client->getResponse();
         //check status code
-        $this->assertEquals('201', $postResponse->getStatusCode(), 'Expected 201 got ' . $postResponse->getStatusCode());
+        $this->assertEquals(
+            '201',
+            $postResponse->getStatusCode(),
+            'Expected 201 got ' . $postResponse->getStatusCode());
         //check if it is json
         $this->assertJson($postResponse->getContent(), 'Expected valid JSON result');
         //check content-type
