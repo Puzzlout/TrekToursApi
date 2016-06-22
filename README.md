@@ -1,2 +1,2 @@
-# TrekToursApi [![Build Status](https://travis-ci.org/Puzzlout/TrekToursApi.svg?branch=master)](https://travis-ci.org/Puzzlout/TrekToursApi)
+# TrekToursApi [![Build Status](https://travis-ci.org/Puzzlout/TrekToursApi.svg?branch=master)](https://travis-ci.org/Puzzlout/TrekToursApi) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ef9469d03d674625a12b759efcdcd041)](https://www.codacy.com/app/webdev-jl/TrekToursApi?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Puzzlout/TrekToursApi&amp;utm_campaign=Badge_Grade) 
 A REST API for the Trek tours business logic.
