@@ -29,6 +29,7 @@ class CustomerInfoRequestController extends FOSRestController
      *     requirements = "^(19|20)\d\d[-/.](0[1-9]|1[012])[-/.](0[1-9]|[12][0-9]|3[01])$",
      *     description = "To date (yyyy-mm-dd format).")
      * @ApiDoc(
+     *  section = "Customer Info Requests",
      *  resource = true,
      *  requirements = {
      *      { "name" = "_format", "dataType" = "string", "requirement" = "(json|xml)", "default" = "json" }
@@ -68,6 +69,7 @@ class CustomerInfoRequestController extends FOSRestController
      * @Rest\Get("/customerinforequests/{id}.{_format}", name="api_get_customerinforequest" ,
      *     requirements = { "id" = "\d+"})
      * @ApiDoc(
+     *  section = "Customer Info Requests",
      *  resource = true,
      *  requirements = {
      *     { "name" = "id", "dataType" = "integer", "requirement" = "\d+", "description" = "CustomerInfoRequest ID" },
@@ -145,6 +147,7 @@ class CustomerInfoRequestController extends FOSRestController
      * )
      *
      * @ApiDoc(
+     *  section = "Customer Info Requests",
      *  resource = true,
      *  description = "Create new CustomerInfoRequest",
      *  requirements = {
@@ -229,6 +232,7 @@ class CustomerInfoRequestController extends FOSRestController
      *     requirements = { "rule" = "(TBP|RTC|RQC)", "error_message" = "Status can be TBP, RTC or RQC." },
      *     description = "Status to replace" )
      * @ApiDoc(
+     *  section = "Customer Info Requests",
      *  description = "Update status of CustomerInfoRequest",
      *  requirements = {
      *      { "name" = "id", "dataType" = "integer", "requirement" = "\d+" },
