@@ -4,10 +4,14 @@ php:
   - 7.0
 #  - hhvm
 
+services:
+  - mysql
+
 before_script:
   - cp app/config/config_test.yml.travis app/config/config_test.yml
   - cp ./phpunit.xml.dist ./phpunit.xml
   - cp app/config/parameters.yml.travis app/config/parameters.yml
+  - mysql -e 'create database IF NOT EXISTS trektoursapi;'
   - composer self-update
   - composer install --prefer-source --no-interaction --dev
   - php bin/console cache:clear --env=test
