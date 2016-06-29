@@ -46,8 +46,17 @@ class CustomerInfoRequestControllerTest extends WebTestCase
             $getEndpoint, $postResponse->headers->get('Location'),
             'Expected '.$getEndpoint.' got '.$postResponse->headers->get('Location'));
 
+        /* Login required for further calls */
+        $client->request('POST', '/login', [
+            '_username' => 'test',
+            '_password' => 'test'
+        ]);
+        $loginResponse = json_decode($client->getResponse()->getContent());
+        $loginToken = $loginResponse->token;
+        $jwtHeader = ['HTTP_Authorization' => 'Bearer '.$loginToken];
+
         /* Test Get All endpoint with limit set to 1 and offset set to new CustomerInfoRequest Id - 1 */
-        $client->request('GET', $getAllEndpoint.$format.'?limit=1&offset='.($postJsonResponse->id-1));
+        $client->request('GET', $getAllEndpoint.$format.'?limit=1&offset='.($postJsonResponse->id-1), [], [], $jwtHeader);
         $getAllResponse = $client->getResponse();
         //check status code
         $this->assertEquals(
@@ -77,7 +86,7 @@ class CustomerInfoRequestControllerTest extends WebTestCase
         $toDate = $newDate->modify('+2 day');
         $toDate = $toDate->format('Y-m-d');
         /* Test get all with from and to */
-        $client->request('GET', $getAllEndpoint.$format.'?from='.$fromDate.'&to='.$toDate);
+        $client->request('GET', $getAllEndpoint.$format.'?from='.$fromDate.'&to='.$toDate, [], [], $jwtHeader);
         $getAllDateResponse = $client->getResponse();
         //check status code
         $this->assertEquals(
@@ -100,7 +109,7 @@ class CustomerInfoRequestControllerTest extends WebTestCase
             'Expected result greater than 0');
 
         /* Test Get One endpoint by new CustomerInfoRequest Id */
-        $client->request('GET', $getEndpoint.$format);
+        $client->request('GET', $getEndpoint.$format, [], [], $jwtHeader);
         $getResponse = $client->getResponse();
         //check status code
         $this->assertEquals(
@@ -131,7 +140,7 @@ class CustomerInfoRequestControllerTest extends WebTestCase
         $client->request('PATCH', $patchEndpoint.$format,
             array(
                 'status' => CustomerInfoRequest::STATUS_RTC
-            ));
+            ), [], $jwtHeader);
         $patchResponse = $client->getResponse();
         //check status code
         $this->assertEquals(
