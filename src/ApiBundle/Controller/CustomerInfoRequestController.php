@@ -61,10 +61,10 @@ class CustomerInfoRequestController extends FOSRestController
             $paramFetcher->get('to'));
         if(!is_null($customerInfoRequests)) {
             $view->setData($customerInfoRequests)->setStatusCode(Response::HTTP_OK);
-        } else {
-            $view->setStatusCode(Response::HTTP_BAD_REQUEST);
+            return $this->handleView($view);
         }
-        return $this->handleView($view);
+
+        return $view->setStatusCode(Response::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -179,9 +179,9 @@ class CustomerInfoRequestController extends FOSRestController
         $customerInfoRequest->setPhoneNumber($paramFetcher->get('phone_number'));
         $customerInfoRequest->setStatus(CustomerInfoRequest::STATUS_TBP);
         try {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($customerInfoRequest);
-            $em->flush();
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($customerInfoRequest);
+            $entityManager->flush();
             $view->setStatusCode(Response::HTTP_CREATED)->setData($customerInfoRequest);
             $view->setHeader('Location', $this->get('router')->generate('api_get_customerinforequest',
                 ['id' => $customerInfoRequest->getId()]));
