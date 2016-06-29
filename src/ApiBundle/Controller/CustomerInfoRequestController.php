@@ -22,12 +22,18 @@ class CustomerInfoRequestController extends FOSRestController
      * @Rest\QueryParam(name = "offset", requirements = "\d+", default = 0, description = "Result offset.")
      * @Rest\QueryParam(
      *     name = "from",
+     *     strict = true,
+     *     nullable = true,
      *     requirements = "^(19|20)\d\d[-/.](0[1-9]|1[012])[-/.](0[1-9]|[12][0-9]|3[01])$",
-     *     description = "From date (yyyy-mm-dd format).")
+     *     description = "From date (yyyy-mm-dd format)."),
+     *     allowBlank = false
      * @Rest\QueryParam(
      *     name = "to",
+     *     strict = true,
+     *     nullable = true,
      *     requirements = "^(19|20)\d\d[-/.](0[1-9]|1[012])[-/.](0[1-9]|[12][0-9]|3[01])$",
-     *     description = "To date (yyyy-mm-dd format).")
+     *     description = "To date (yyyy-mm-dd format)."),
+     *     allowBlank = false
      * @ApiDoc(
      *  section = "Customer Info Requests",
      *  resource = true,
@@ -46,7 +52,6 @@ class CustomerInfoRequestController extends FOSRestController
     {
         $view = $this->view();
         $view->setSerializationContext(SerializationContext::create()->setGroups(['list']));
-
         $repository = $this->getDoctrine()->getManager()->getRepository('ApiBundle:CustomerInfoRequest');
         $customerInfoRequests = null;
         $customerInfoRequests = $repository->findAllWithFilters(
