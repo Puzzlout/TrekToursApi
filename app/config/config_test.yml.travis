@@ -1,0 +1,28 @@
+parameters:
+    database_host: 127.0.0.1
+    database_port: null
+    database_name: trektoursapi_test
+    database_user: travis
+    database_password: null
+    mailer_transport: smtp
+    mailer_host: 127.0.0.1
+    mailer_user: ~
+    mailer_password: ~
+    secret: ThisTokenIsNotSoSecretChangeIt
+
+imports:
+    - { resource: config_dev.yml }
+
+framework:
+    test: ~
+    session:
+        storage_id: session.storage.mock_file
+    profiler:
+        collect: false
+
+web_profiler:
+    toolbar: false
+    intercept_redirects: false
+
+swiftmailer:
+disable_delivery: true
