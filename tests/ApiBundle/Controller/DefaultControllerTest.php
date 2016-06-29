@@ -15,11 +15,11 @@ class DefaultControllerTest extends WebTestCase
         $this->assertEquals('200', $client->getResponse()->getStatusCode());
         $this->assertEquals('application/json', $client->getResponse()->headers->get('content-type'));
 
-        $client->request('GET','/.xml');
+        $client->request('GET', '/.xml');
         $this->assertEquals('200', $client->getResponse()->getStatusCode());
         $this->assertContains('text/xml', $client->getResponse()->headers->get('content-type'));
 
-        $client->request('POST','/');
+        $client->request('POST', '/');
         $this->assertEquals('405', $client->getResponse()->getStatusCode(), 'Assert that code is 405');
     }
 }
