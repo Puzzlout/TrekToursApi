@@ -22,14 +22,18 @@ class CustomerInfoRequestTest extends KernelTestCase
         $this->entityManager = static::$kernel->getContainer()->get('doctrine')->getManager();
         for($i=0; $i<10; $i++)
         {
+            $dateTime = new \DateTime('now');
             $customerInfoRequest = new CustomerInfoRequest();
             $customerInfoRequest->setEmail('test'.$i.'@test.com');
             $customerInfoRequest->setFirstName('Test'.$i);
             $customerInfoRequest->setLastName('Test'.$i);
             $customerInfoRequest->setMessage('Test test '.$i);
             $customerInfoRequest->setPhoneNumber('+11122233344'.$i);
+            $customerInfoRequest->setHasSentCopyToClient($i%2);
             $customerInfoRequest->setStatus(CustomerInfoRequest::STATUS_TBP);
             $this->entityManager->persist($customerInfoRequest);
+            $customerInfoRequest->setCreated($dateTime->modify('+'.$i.' day'));
+            $this->entityManager->flush();
         }
 
         $this->entityManager->flush();
@@ -49,10 +53,14 @@ class CustomerInfoRequestTest extends KernelTestCase
 
         //test for current time interval
         $from = $this->dateTimeNow->format('Y-m-d');
-        $to = $this->dateTimeNow->add(date_interval_create_from_date_string('3 days'))->format('Y-m-d');
+        $to = $this->dateTimeNow->add(date_interval_create_from_date_string('30 days'))->format('Y-m-d');
         $customerInfoRequests = $this->entityManager->getRepository('ApiBundle:CustomerInfoRequest')
             ->findAllWithFilters(0, 5, $from, $to);
         $this->assertCount(5, $customerInfoRequests);
+
+        //check order of dates
+        $this->assertGreaterThan($customerInfoRequests[1]->getCreated()->getTimestamp(),
+            $customerInfoRequests[0]->getCreated()->getTimestamp());
 
         //test for previous time interval
         $to = $this->dateTimeNow->sub(date_interval_create_from_date_string('6 days'))->format('Y-m-d');
