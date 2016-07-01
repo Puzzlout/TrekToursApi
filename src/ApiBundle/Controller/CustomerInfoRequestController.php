@@ -37,6 +37,9 @@ class CustomerInfoRequestController extends FOSRestController
      * @ApiDoc(
      *  section = "Customer Info Requests",
      *  resource = true,
+     *  headers = {
+     *      { "name" = "Authorization", "required" = true, "description" = "Authorization: Bearer JWT" }
+     *  },
      *  requirements = {
      *      { "name" = "_format", "dataType" = "string", "requirement" = "(json|xml)", "default" = "json" }
      *  },
@@ -59,8 +62,9 @@ class CustomerInfoRequestController extends FOSRestController
             $paramFetcher->get('limit'),
             $paramFetcher->get('from'),
             $paramFetcher->get('to'));
-        if(!is_null($customerInfoRequests)) {
-            $view->setData($customerInfoRequests)->setStatusCode(Response::HTTP_OK);
+        if(!is_null($customerInfoRequests['items'])) {
+            $view->setData($customerInfoRequests['items'])->setStatusCode(Response::HTTP_OK);
+            $view->setHeader('X-Total-Count', $customerInfoRequests['totalCount']);
             return $this->handleView($view);
         }
 
@@ -76,6 +80,9 @@ class CustomerInfoRequestController extends FOSRestController
      * @ApiDoc(
      *  section = "Customer Info Requests",
      *  resource = true,
+     *  headers = {
+     *      { "name" = "Authorization", "required" = true, "description" = "Authorization: Bearer JWT" }
+     *  },
      *  requirements = {
      *     { "name" = "id", "dataType" = "integer", "requirement" = "\d+", "description" = "CustomerInfoRequest ID" },
      *     { "name" = "_format", "dataType" = "string", "requirement" = "(json|xml)", "default" = "json" }
@@ -249,6 +256,9 @@ class CustomerInfoRequestController extends FOSRestController
      * @ApiDoc(
      *  section = "Customer Info Requests",
      *  description = "Update status of CustomerInfoRequest",
+     *  headers = {
+     *      { "name" = "Authorization", "required" = true, "description" = "Authorization: Bearer JWT" }
+     *  },
      *  requirements = {
      *      { "name" = "id", "dataType" = "integer", "requirement" = "\d+" },
      *      { "name" = "_format", "dataType" = "string", "requirement" = "(json|xml)", "default" = "json" }

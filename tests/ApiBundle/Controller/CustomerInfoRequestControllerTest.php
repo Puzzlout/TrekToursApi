@@ -9,6 +9,17 @@ use Translatable\Fixture\Type\Custom;
 
 class CustomerInfoRequestControllerTest extends WebTestCase
 {
+
+    private $entityManager;
+
+    protected function setUp()
+    {
+        self::bootKernel();
+        $this->entityManager = static::$kernel->getContainer()->get('doctrine')->getManager();
+        $tableName = $this->entityManager->getClassMetadata('ApiBundle:CustomerInfoRequest')->getTableName();
+        $this->truncateTables($this->entityManager, [$tableName], false);
+    }
+
     public function testCustomerInfoRequest()
     {
         $client = static::createClient();
@@ -43,6 +54,7 @@ class CustomerInfoRequestControllerTest extends WebTestCase
         $this->assertEquals($postArray['last_name'], $postJsonResponse->last_name);
         $this->assertEquals($postArray['phone_number'], $postJsonResponse->phone_number);
         $this->assertEquals((boolean)$postArray['has_sent_copy_to_client'], $postJsonResponse->has_sent_copy_to_client);
+
         $this->assertEquals($postArray['message'], $postJsonResponse->message);
 
 
@@ -87,6 +99,7 @@ class CustomerInfoRequestControllerTest extends WebTestCase
             $postJsonResponse->id,
             $getAllJsonResponse[0]->id,
             'Expected '.$postJsonResponse->id.' got '.$getAllJsonResponse[0]->id);
+        $this->assertEquals(1, $getAllResponse->headers->get('X-Total-Count'));
 
         $getAllDate = $getAllJsonResponse[0]->created;
         $newDate = new \DateTime($getAllDate);
@@ -171,11 +184,18 @@ class CustomerInfoRequestControllerTest extends WebTestCase
             CustomerInfoRequest::STATUS_RTC, $patchJsonResponse->status,
             'Expected '.CustomerInfoRequest::STATUS_RTC.' got '.$patchJsonResponse->status);
 
-        //truncate table
-        $em = $client->getContainer()->get('doctrine')->getManager();
-        $tableName = $em->getClassMetadata('ApiBundle:CustomerInfoRequest')->getTableName();
-        $this->truncateTables($em, [$tableName], false);
 
+
+    }
+
+    protected function tearDown()
+    {
+        parent::tearDown();
+        //truncate table
+        $tableName = $this->entityManager->getClassMetadata('ApiBundle:CustomerInfoRequest')->getTableName();
+        $this->truncateTables($this->entityManager, [$tableName], false);
+        $this->entityManager->close();
+        $this->entityManager = null;
     }
 
     /**

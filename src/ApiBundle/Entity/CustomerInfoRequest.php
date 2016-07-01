@@ -65,7 +65,7 @@ class CustomerInfoRequest
      * @var string
      *
      * @ORM\Column(name="message", type="text")
-     * @Serializer\Groups({"details"})
+     * @Serializer\Groups({"details", "list"})
      */
     private $message;
 
