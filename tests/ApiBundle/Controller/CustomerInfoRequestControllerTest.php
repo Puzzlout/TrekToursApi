@@ -9,23 +9,34 @@ use Translatable\Fixture\Type\Custom;
 
 class CustomerInfoRequestControllerTest extends WebTestCase
 {
+
+    private $entityManager;
+
+    protected function setUp()
+    {
+        self::bootKernel();
+        $this->entityManager = static::$kernel->getContainer()->get('doctrine')->getManager();
+        $tableName = $this->entityManager->getClassMetadata('ApiBundle:CustomerInfoRequest')->getTableName();
+        $this->truncateTables($this->entityManager, [$tableName], false);
+    }
+
     public function testCustomerInfoRequest()
     {
         $client = static::createClient();
         $format = '.json';
         $postEndpoint = $client->getContainer()->get('router')->generate('api_post_customerinforequests');
         $getAllEndpoint = $client->getContainer()->get('router')->generate('api_get_customerinforequests');
-
+        $postArray = [
+            'email' => 'test@test.com',
+            'first_name' => 'Tèst',
+            'last_name' => 'TèstTèst',
+            'phone_number' => '+111222333444',
+            'has_sent_copy_to_client' => 1,
+            'message' => 'Test message'
+        ];
 
         /* Test post endpoint */
-        $client->request('POST', $postEndpoint.$format,
-            array(
-                'email' => 'test@test.com',
-                'first_name' => 'Tèst',
-                'last_name' => 'TèstTèst',
-                'phone_number' => '+111222333444',
-                'message' => 'Test message'
-            ));
+        $client->request('POST', $postEndpoint.$format, $postArray);
         $postResponse = $client->getResponse();
         //check status code
         $this->assertEquals('201', $postResponse->getStatusCode(), 'Expected 201 got '.$postResponse->getStatusCode());
@@ -37,6 +48,16 @@ class CustomerInfoRequestControllerTest extends WebTestCase
             $postResponse->headers->get('content-type'),
             'Expected application/json got '.$postResponse->headers->get('content-type'));
         $postJsonResponse = json_decode($postResponse->getContent());
+        //test if everything is saved correctly
+        $this->assertEquals($postArray['email'], $postJsonResponse->email);
+        $this->assertEquals($postArray['first_name'], $postJsonResponse->first_name);
+        $this->assertEquals($postArray['last_name'], $postJsonResponse->last_name);
+        $this->assertEquals($postArray['phone_number'], $postJsonResponse->phone_number);
+        $this->assertEquals((boolean)$postArray['has_sent_copy_to_client'], $postJsonResponse->has_sent_copy_to_client);
+
+        $this->assertEquals($postArray['message'], $postJsonResponse->message);
+
+
         $getEndpoint = $client->getContainer()->get('router')->generate('api_get_customerinforequest',
             array('id' => $postJsonResponse->id));
         $patchEndpoint = $client->getContainer()->get('router')->generate('api_patch_customerinforequests',
@@ -78,6 +99,7 @@ class CustomerInfoRequestControllerTest extends WebTestCase
             $postJsonResponse->id,
             $getAllJsonResponse[0]->id,
             'Expected '.$postJsonResponse->id.' got '.$getAllJsonResponse[0]->id);
+        $this->assertEquals(1, $getAllResponse->headers->get('X-Total-Count'));
 
         $getAllDate = $getAllJsonResponse[0]->created;
         $newDate = new \DateTime($getAllDate);
@@ -162,11 +184,18 @@ class CustomerInfoRequestControllerTest extends WebTestCase
             CustomerInfoRequest::STATUS_RTC, $patchJsonResponse->status,
             'Expected '.CustomerInfoRequest::STATUS_RTC.' got '.$patchJsonResponse->status);
 
-        //truncate table
-        $em = $client->getContainer()->get('doctrine')->getManager();
-        $tableName = $em->getClassMetadata('ApiBundle:CustomerInfoRequest')->getTableName();
-        $this->truncateTables($em, [$tableName], false);
 
+
+    }
+
+    protected function tearDown()
+    {
+        parent::tearDown();
+        //truncate table
+        $tableName = $this->entityManager->getClassMetadata('ApiBundle:CustomerInfoRequest')->getTableName();
+        $this->truncateTables($this->entityManager, [$tableName], false);
+        $this->entityManager->close();
+        $this->entityManager = null;
     }
 
     /**

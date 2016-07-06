@@ -37,6 +37,9 @@ class CustomerInfoRequestController extends FOSRestController
      * @ApiDoc(
      *  section = "Customer Info Requests",
      *  resource = true,
+     *  headers = {
+     *      { "name" = "Authorization", "required" = true, "description" = "Authorization: Bearer JWT" }
+     *  },
      *  requirements = {
      *      { "name" = "_format", "dataType" = "string", "requirement" = "(json|xml)", "default" = "json" }
      *  },
@@ -59,8 +62,9 @@ class CustomerInfoRequestController extends FOSRestController
             $paramFetcher->get('limit'),
             $paramFetcher->get('from'),
             $paramFetcher->get('to'));
-        if(!is_null($customerInfoRequests)) {
-            $view->setData($customerInfoRequests)->setStatusCode(Response::HTTP_OK);
+        if(!is_null($customerInfoRequests['items'])) {
+            $view->setData($customerInfoRequests['items'])->setStatusCode(Response::HTTP_OK);
+            $view->setHeader('X-Total-Count', $customerInfoRequests['totalCount']);
             return $this->handleView($view);
         }
 
@@ -76,6 +80,9 @@ class CustomerInfoRequestController extends FOSRestController
      * @ApiDoc(
      *  section = "Customer Info Requests",
      *  resource = true,
+     *  headers = {
+     *      { "name" = "Authorization", "required" = true, "description" = "Authorization: Bearer JWT" }
+     *  },
      *  requirements = {
      *     { "name" = "id", "dataType" = "integer", "requirement" = "\d+", "description" = "CustomerInfoRequest ID" },
      *     { "name" = "_format", "dataType" = "string", "requirement" = "(json|xml)", "default" = "json" }
@@ -150,6 +157,15 @@ class CustomerInfoRequestController extends FOSRestController
      *          "error_message" = "Message can't contain html tags" },
      *     description = "Message."
      * )
+     * @Rest\RequestParam(
+     *     name = "has_sent_copy_to_client",
+     *     nullable = false,
+     *     default = 0,
+     *     requirements = {
+     *          "rule" = "(0|1)",
+     *          "error_message" = "Can be only 0 or 1" },
+     *     description = "Send copy of email to client."
+     * )
      *
      * @ApiDoc(
      *  section = "Customer Info Requests",
@@ -177,6 +193,7 @@ class CustomerInfoRequestController extends FOSRestController
         $customerInfoRequest->setLastName($paramFetcher->get('last_name'));
         $customerInfoRequest->setMessage($paramFetcher->get('message'));
         $customerInfoRequest->setPhoneNumber($paramFetcher->get('phone_number'));
+        $customerInfoRequest->setHasSentCopyToClient($paramFetcher->get('has_sent_copy_to_client'));
         $customerInfoRequest->setStatus(CustomerInfoRequest::STATUS_TBP);
         try {
             $entityManager = $this->getDoctrine()->getManager();
@@ -185,7 +202,7 @@ class CustomerInfoRequestController extends FOSRestController
             $view->setStatusCode(Response::HTTP_CREATED)->setData($customerInfoRequest);
             $view->setHeader('Location', $this->get('router')->generate('api_get_customerinforequest',
                 ['id' => $customerInfoRequest->getId()]));
-            /* TODO: Enable when we get admin email
+            /* TODO: Enable when we get admin email and add CC if has_sent_copy_to_client is 1
             * Tested both plaintext and html with gmail
             $message = \Swift_Message::newInstance()
                 ->setSubject('New Customer Info Request')
@@ -239,6 +256,9 @@ class CustomerInfoRequestController extends FOSRestController
      * @ApiDoc(
      *  section = "Customer Info Requests",
      *  description = "Update status of CustomerInfoRequest",
+     *  headers = {
+     *      { "name" = "Authorization", "required" = true, "description" = "Authorization: Bearer JWT" }
+     *  },
      *  requirements = {
      *      { "name" = "id", "dataType" = "integer", "requirement" = "\d+" },
      *      { "name" = "_format", "dataType" = "string", "requirement" = "(json|xml)", "default" = "json" }

@@ -139,4 +139,20 @@ class CustomerInfoRequestTest extends \PHPUnit_Framework_Testcase
         $this->customerInfoRequest->setUpdated($date);
         $this->assertEquals($this->customerInfoRequest->getUpdated(), $date);
     }
+
+    public function testSetHasSentCopyToClient()
+    {
+        $returnObject = $this->customerInfoRequest->setHasSentCopyToClient(false);
+        $this->assertInstanceOf('ApiBundle\Entity\CustomerInfoRequest', $returnObject);
+        $this->assertFalse($returnObject->getHasSentCopyToClient());
+        $returnObject = $this->customerInfoRequest->setHasSentCopyToClient(true);
+        $this->assertInstanceOf('ApiBundle\Entity\CustomerInfoRequest', $returnObject);
+        $this->assertTrue($returnObject->getHasSentCopyToClient());
+    }
+
+    public function testGetHasSentCopyToClient()
+    {
+        $this->customerInfoRequest->setHasSentCopyToClient(false);
+        $this->assertFalse($this->customerInfoRequest->getHasSentCopyToClient());
+    }
 }

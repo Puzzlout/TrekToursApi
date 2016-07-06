@@ -65,7 +65,7 @@ class CustomerInfoRequest
      * @var string
      *
      * @ORM\Column(name="message", type="text")
-     * @Serializer\Groups({"details"})
+     * @Serializer\Groups({"details", "list"})
      */
     private $message;
 
@@ -76,6 +76,14 @@ class CustomerInfoRequest
      * @Serializer\Groups({"list", "details"})
      */
     protected $status;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="has_sent_copy_to_client", type="boolean")
+     * @Serializer\Groups({"details"})
+     */
+    private $hasSentCopyToClient;
 
     /**
      * @var \DateTime
@@ -297,5 +305,29 @@ class CustomerInfoRequest
     public function getUpdated()
     {
         return $this->updated;
+    }
+
+    /**
+     * Set hasSentCopyToClient
+     *
+     * @param boolean $hasSentCopyToClient
+     *
+     * @return CustomerInfoRequest
+     */
+    public function setHasSentCopyToClient($hasSentCopyToClient)
+    {
+        $this->hasSentCopyToClient = $hasSentCopyToClient;
+
+        return $this;
+    }
+
+    /**
+     * Get hasSentCopyToClient
+     *
+     * @return boolean
+     */
+    public function getHasSentCopyToClient()
+    {
+        return $this->hasSentCopyToClient;
     }
 }
