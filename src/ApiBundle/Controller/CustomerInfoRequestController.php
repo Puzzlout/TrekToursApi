@@ -202,12 +202,10 @@ class CustomerInfoRequestController extends FOSRestController
             $view->setStatusCode(Response::HTTP_CREATED)->setData($customerInfoRequest);
             $view->setHeader('Location', $this->get('router')->generate('api_get_customerinforequest',
                 ['id' => $customerInfoRequest->getId()]));
-            /* TODO: Enable when we get admin email and add CC if has_sent_copy_to_client is 1
-            * Tested both plaintext and html with gmail
             $message = \Swift_Message::newInstance()
                 ->setSubject('New Customer Info Request')
-                ->setFrom('')
-                ->setTo('')
+                ->setFrom($this->container->getParameter('mail_admin_address'))
+                ->setTo($this->container->getParameter('mail_admin_address'))
                 ->setBody(
                     $this->renderView(
                         'ApiBundle:emails:customerinforequest.html.twig',
@@ -234,7 +232,13 @@ class CustomerInfoRequestController extends FOSRestController
                     'text/plain'
                 )
             ;
-            $this->get('mailer')->send($message);*/
+            if($paramFetcher->get('has_sent_copy_to_client') == 1) {
+                $message->addCc($paramFetcher->get('email'));
+            }
+            if($this->container->getParameter('mail_admin_address')) {
+                $this->get('mailer')->send($message);
+            }
+
 
         } catch (\Exception $e) {
             $view->setStatusCode(Response::HTTP_BAD_REQUEST);

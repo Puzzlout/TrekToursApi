@@ -11,13 +11,14 @@ class CustomerInfoRequestControllerTest extends WebTestCase
 {
 
     private $entityManager;
-
+    private $mailer;
     protected function setUp()
     {
         self::bootKernel();
         $this->entityManager = static::$kernel->getContainer()->get('doctrine')->getManager();
         $tableName = $this->entityManager->getClassMetadata('ApiBundle:CustomerInfoRequest')->getTableName();
         $this->truncateTables($this->entityManager, [$tableName], false);
+        $this->mailer = $this->getMockBuilder('Swift_Mailer')->disableOriginalConstructor()->getMock();
     }
 
     public function testCustomerInfoRequest()
@@ -36,6 +37,8 @@ class CustomerInfoRequestControllerTest extends WebTestCase
         ];
 
         /* Test post endpoint */
+        $this->mailer->expects($this->any())->method('send')->willReturn(true);
+        $client->getContainer()->set('mailer', $this->mailer);
         $client->request('POST', $postEndpoint.$format, $postArray);
         $postResponse = $client->getResponse();
         //check status code
