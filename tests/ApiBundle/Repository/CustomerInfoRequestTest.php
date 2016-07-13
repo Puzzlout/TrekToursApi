@@ -32,7 +32,7 @@ class CustomerInfoRequestTest extends KernelTestCase
             $customerInfoRequest->setLastName('Test'.$i);
             $customerInfoRequest->setMessage('Test test '.$i);
             $customerInfoRequest->setPhoneNumber('+11122233344'.$i);
-            $customerInfoRequest->setHasSentCopyToClient($i%2);
+            $customerInfoRequest->setSendCopyToClient($i%2);
             $customerInfoRequest->setStatus(CustomerInfoRequest::STATUS_TBP);
             $this->entityManager->persist($customerInfoRequest);
             $customerInfoRequest->setCreated($dateTime->modify('+'.$i.' day'));

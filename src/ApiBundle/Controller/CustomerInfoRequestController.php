@@ -158,7 +158,7 @@ class CustomerInfoRequestController extends FOSRestController
      *     description = "Message."
      * )
      * @Rest\RequestParam(
-     *     name = "has_sent_copy_to_client",
+     *     name = "send_copy_to_client",
      *     nullable = false,
      *     default = 0,
      *     requirements = {
@@ -193,7 +193,7 @@ class CustomerInfoRequestController extends FOSRestController
         $customerInfoRequest->setLastName($paramFetcher->get('last_name'));
         $customerInfoRequest->setMessage($paramFetcher->get('message'));
         $customerInfoRequest->setPhoneNumber($paramFetcher->get('phone_number'));
-        $customerInfoRequest->setHasSentCopyToClient($paramFetcher->get('has_sent_copy_to_client'));
+        $customerInfoRequest->setSendCopyToClient($paramFetcher->get('send_copy_to_client'));
         $customerInfoRequest->setStatus(CustomerInfoRequest::STATUS_TBP);
         try {
             $entityManager = $this->getDoctrine()->getManager();
@@ -202,44 +202,6 @@ class CustomerInfoRequestController extends FOSRestController
             $view->setStatusCode(Response::HTTP_CREATED)->setData($customerInfoRequest);
             $view->setHeader('Location', $this->get('router')->generate('api_get_customerinforequest',
                 ['id' => $customerInfoRequest->getId()]));
-            $message = \Swift_Message::newInstance()
-                ->setSubject('New Customer Info Request')
-                ->setFrom($this->container->getParameter('mail_admin_address'))
-                ->setTo($this->container->getParameter('mail_admin_address'))
-                ->setBody(
-                    $this->renderView(
-                        'ApiBundle:emails:customerinforequest.html.twig',
-                        [
-                            'first_name' => $paramFetcher->get('first_name'),
-                            'last_name' => $paramFetcher->get('last_name'),
-                            'message' => $paramFetcher->get('message'),
-                            'phone_number' => $paramFetcher->get('phone_number'),
-                            'email' => $paramFetcher->get('email')
-                        ]
-                    ),
-                    'text/html'
-                )->addPart(
-                    $this->renderView(
-                        'ApiBundle:emails:customerinforequest.txt.twig',
-                        [
-                            'first_name' => $paramFetcher->get('first_name'),
-                            'last_name' => $paramFetcher->get('last_name'),
-                            'message' => $paramFetcher->get('message'),
-                            'phone_number' => $paramFetcher->get('phone_number'),
-                            'email' => $paramFetcher->get('email')
-                        ]
-                    ),
-                    'text/plain'
-                )
-            ;
-            if($paramFetcher->get('has_sent_copy_to_client') == 1) {
-                $message->addCc($paramFetcher->get('email'));
-            }
-            if($this->container->getParameter('mail_admin_address')) {
-                $this->get('mailer')->send($message);
-            }
-
-
         } catch (\Exception $e) {
             $view->setStatusCode(Response::HTTP_BAD_REQUEST);
         }
@@ -290,6 +252,74 @@ class CustomerInfoRequestController extends FOSRestController
         } else {
             try {
                 $customerInfoRequest->setStatus($paramFetcher->get('status'));
+                $em->persist($customerInfoRequest);
+                $em->flush();
+                $view->setStatusCode(Response::HTTP_OK)->setData($customerInfoRequest);
+            } catch (\Exception $e) {
+                $view->setStatusCode(Response::HTTP_BAD_REQUEST);
+            }
+        }
+
+        return $this->handleView($view);
+    }
+
+    /**
+     * @var ParamFetcher $paramFetcher
+     * @return View
+     *
+     * @Rest\Patch("/customerinforequests/{id}/sentemails.{_format}", name="api_patch_customerinforequests_sentemails")
+     * @Rest\RequestParam(
+     *     name = "admin_email_sent",
+     *     nullable  = true,
+     *     requirements = { "rule" = "(0|1)", "error_message" = "Admin email sent can be 0 or 1" },
+     *     description = "Set admin email sent date to current datetime" )
+     * @Rest\RequestParam(
+     *     name = "client_email_sent",
+     *     nullable  = true,
+     *     requirements = { "rule" = "(0|1)", "error_message" = "Client email sent can be 0 or 1" },
+     *     description = "Set client email sent date to current datetime" )
+     * @ApiDoc(
+     *  section = "Customer Info Requests",
+     *  description = "Update client and admin email sent dates of CustomerInfoRequest",
+     *  requirements = {
+     *      { "name" = "id", "dataType" = "integer", "requirement" = "\d+" },
+     *      { "name" = "_format", "dataType" = "string", "requirement" = "(json|xml)", "default" = "json" }
+     *  },
+     *  output = { "class" = "ApiBundle\Entity\CustomerInfoRequest", "groups" = {"details"} },
+     *  statusCodes = {
+     *     200 = "Returned on success",
+     *     400 = "Returned on invalid parameter",
+     *     403 = "Returned when request isn't valid",
+     *     404 = "Returned when CustomerRequestInfo isn't found"
+     *  }
+     * )
+     */
+    public function patchCustomerInfoRequestSentEmails(ParamFetcher $paramFetcher, $id)
+    {
+        $view = $this->view();
+        $view->setSerializationContext(SerializationContext::create()->setSerializeNull(true)->setGroups(['details']));
+
+        $em = $this->getDoctrine()->getManager();
+        $repository = $em->getRepository('ApiBundle:CustomerInfoRequest');
+        $customerInfoRequest = $repository->find($id);
+        if(is_null($customerInfoRequest)) {
+            $view->setStatusCode(Response::HTTP_NOT_FOUND);
+        } else {
+            try {
+                if(!is_null($paramFetcher->get('admin_email_sent'))) {
+                    if($paramFetcher->get('admin_email_sent') == 1) {
+                        $customerInfoRequest->setAdminEmailSentDate(new \DateTime());
+                    } else {
+                        $customerInfoRequest->setAdminEmailSentDate(null);
+                    }
+                }
+                if(!is_null($paramFetcher->get('client_email_sent'))) {
+                    if($paramFetcher->get('client_email_sent') == 1) {
+                        $customerInfoRequest->setClientEmailSentDate(new \DateTime());
+                    } else {
+                        $customerInfoRequest->setClientEmailSentDate(null);
+                    }
+                }
                 $em->persist($customerInfoRequest);
                 $em->flush();
                 $view->setStatusCode(Response::HTTP_OK)->setData($customerInfoRequest);

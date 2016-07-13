@@ -11,14 +11,13 @@ class CustomerInfoRequestControllerTest extends WebTestCase
 {
 
     private $entityManager;
-    private $mailer;
+
     protected function setUp()
     {
         self::bootKernel();
         $this->entityManager = static::$kernel->getContainer()->get('doctrine')->getManager();
         $tableName = $this->entityManager->getClassMetadata('ApiBundle:CustomerInfoRequest')->getTableName();
         $this->truncateTables($this->entityManager, [$tableName], false);
-        $this->mailer = $this->getMockBuilder('Swift_Mailer')->disableOriginalConstructor()->getMock();
     }
 
     public function testCustomerInfoRequest()
@@ -32,13 +31,12 @@ class CustomerInfoRequestControllerTest extends WebTestCase
             'first_name' => 'Tèst',
             'last_name' => 'TèstTèst',
             'phone_number' => '+111222333444',
-            'has_sent_copy_to_client' => 1,
+            'send_copy_to_client' => 1,
             'message' => 'Test message'
         ];
 
         /* Test post endpoint */
-        $this->mailer->expects($this->any())->method('send')->willReturn(true);
-        $client->getContainer()->set('mailer', $this->mailer);
+
         $client->request('POST', $postEndpoint.$format, $postArray);
         $postResponse = $client->getResponse();
         //check status code
@@ -56,8 +54,7 @@ class CustomerInfoRequestControllerTest extends WebTestCase
         $this->assertEquals($postArray['first_name'], $postJsonResponse->first_name);
         $this->assertEquals($postArray['last_name'], $postJsonResponse->last_name);
         $this->assertEquals($postArray['phone_number'], $postJsonResponse->phone_number);
-        $this->assertEquals((boolean)$postArray['has_sent_copy_to_client'], $postJsonResponse->has_sent_copy_to_client);
-
+        $this->assertEquals((boolean)$postArray['send_copy_to_client'], $postJsonResponse->send_copy_to_client);
         $this->assertEquals($postArray['message'], $postJsonResponse->message);
 
 
@@ -65,10 +62,82 @@ class CustomerInfoRequestControllerTest extends WebTestCase
             array('id' => $postJsonResponse->id));
         $patchEndpoint = $client->getContainer()->get('router')->generate('api_patch_customerinforequests',
             array('id' => $postJsonResponse->id));
+        $patchSentEmailsEndpoint = $client->getContainer()->get('router')->generate(
+            'api_patch_customerinforequests_sentemails',
+            array('id' => $postJsonResponse->id));
         //check location
         $this->assertEquals(
             $getEndpoint, $postResponse->headers->get('Location'),
             'Expected '.$getEndpoint.' got '.$postResponse->headers->get('Location'));
+
+        /* Test patch sent emails endpoint for sent emails */
+        $client->request('PATCH', $patchSentEmailsEndpoint.$format,
+            array(
+                'admin_email_sent' => 1,
+                'client_email_sent' => 1
+            ));
+        $patchEmailsResponse = $client->getResponse();
+        //check status code
+        $this->assertEquals(
+            '200',
+            $patchEmailsResponse->getStatusCode(),
+            'Expected 200 got '.$patchEmailsResponse->getStatusCode());
+        //check if it is json
+        $this->assertJson(
+            $patchEmailsResponse->getContent(),
+            'Expected valid JSON result');
+        //check content-type
+        $this->assertEquals(
+            'application/json',
+            $patchEmailsResponse->headers->get('content-type'),
+            'Expected application/json got '.$patchEmailsResponse->headers->get('content-type'));
+        $emailsJsonResponse = json_decode($patchEmailsResponse->getContent());
+        $this->assertTrue(
+            \DateTime::createFromFormat(\DateTime::ATOM, $emailsJsonResponse->admin_email_sent_date) !== false
+        );
+        $this->assertTrue(
+            \DateTime::createFromFormat(\DateTime::ATOM, $emailsJsonResponse->client_email_sent_date) !== false
+        );
+
+        /* Test patch sent emails endpoint when emails aren't sent */
+        $client->request('PATCH', $patchSentEmailsEndpoint.$format,
+            array(
+                'admin_email_sent' => 0,
+                'client_email_sent' => 0
+            ));
+        $patchEmailsResponse = $client->getResponse();
+        //check status code
+        $this->assertEquals(
+            '200',
+            $patchEmailsResponse->getStatusCode(),
+            'Expected 200 got '.$patchEmailsResponse->getStatusCode());
+        //check if it is json
+        $this->assertJson(
+            $patchEmailsResponse->getContent(),
+            'Expected valid JSON result');
+        //check content-type
+        $this->assertEquals(
+            'application/json',
+            $patchEmailsResponse->headers->get('content-type'),
+            'Expected application/json got '.$patchEmailsResponse->headers->get('content-type'));
+        $emailsJsonResponse = json_decode($patchEmailsResponse->getContent());
+        $this->assertNull($emailsJsonResponse->admin_email_sent_date);
+        $this->assertNull($emailsJsonResponse->client_email_sent_date);
+        /* Test for non existing id */
+        $patchSentEmailsEndpoint = $client->getContainer()->get('router')->generate(
+            'api_patch_customerinforequests_sentemails',
+            array('id' => 1001));
+        $client->request('PATCH', $patchSentEmailsEndpoint.$format,
+            array(
+                'admin_email_sent' => 0,
+                'client_email_sent' => 0
+            ));
+        $patchEmailsResponse = $client->getResponse();
+        //check status code
+        $this->assertEquals(
+            '404',
+            $patchEmailsResponse->getStatusCode(),
+            'Expected 404 got '.$patchEmailsResponse->getStatusCode());
 
         /* Login required for further calls */
         $client->request('POST', '/login', [
@@ -160,6 +229,16 @@ class CustomerInfoRequestControllerTest extends WebTestCase
         $this->assertEquals(
             CustomerInfoRequest::STATUS_TBP, $getJsonResponse->status,
             'Expected '.CustomerInfoRequest::STATUS_TBP.' got '.$getJsonResponse->status);
+        /* Test for non existing id */
+        $getEndpoint = $client->getContainer()->get('router')->generate('api_get_customerinforequest',
+            array('id' => 1001));
+        $client->request('GET', $getEndpoint.$format, [], [], $jwtHeader);
+        $getResponse = $client->getResponse();
+        //check status code
+        $this->assertEquals(
+            '404',
+            $getResponse->getStatusCode(),
+            'Expected 404 got '.$getResponse->getStatusCode());
 
         /* Test Patch Status */
         $client->request('PATCH', $patchEndpoint.$format,
@@ -186,7 +265,19 @@ class CustomerInfoRequestControllerTest extends WebTestCase
         $this->assertEquals(
             CustomerInfoRequest::STATUS_RTC, $patchJsonResponse->status,
             'Expected '.CustomerInfoRequest::STATUS_RTC.' got '.$patchJsonResponse->status);
-
+        /* Test for non existing id */
+        $patchEndpoint = $client->getContainer()->get('router')->generate('api_patch_customerinforequests',
+            array('id' => 1001));
+        $client->request('PATCH', $patchEndpoint.$format,
+            array(
+                'status' => CustomerInfoRequest::STATUS_RTC
+            ), [], $jwtHeader);
+        $getResponse = $client->getResponse();
+        //check status code
+        $this->assertEquals(
+            '404',
+            $getResponse->getStatusCode(),
+            'Expected 404 got '.$getResponse->getStatusCode());
 
 
     }

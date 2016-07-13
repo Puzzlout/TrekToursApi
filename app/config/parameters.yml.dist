@@ -9,7 +9,6 @@ parameters:
     mailer_host: 'mail.supremecluster.com'
     mailer_user: 'noreply@puzzlout.com'
     mailer_password: '3PPVte6bn0'
-    mail_admin_address: 'noreply@puzzlout.com'
     secret: ThisTokenIsNotSoSecretChangeIt
     jwt_private_key_path: '%kernel.root_dir%/../var/jwt/private.pem'
     jwt_public_key_path: '%kernel.root_dir%/../var/jwt/public.pem'
