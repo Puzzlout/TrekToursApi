@@ -40,7 +40,7 @@ class CustomerInfoRequestControllerTest extends WebTestCase
         $client->request('POST', $postEndpoint . $format, $postArray);
         $postResponse = $client->getResponse();
         //check status code
-        $this->assertEquals('201', $postResponse->getStatusCode(), 'Expected 201 got ' . $postResponse->getStatusCode());
+        $this->assertEquals('201', $postResponse->getStatusCode(), 'Expected 201 got '.$postResponse->getStatusCode());
         //check if it is json
         $this->assertJson($postResponse->getContent(), 'Expected valid JSON result');
         //check content-type
@@ -83,9 +83,7 @@ class CustomerInfoRequestControllerTest extends WebTestCase
             $patchEmailsResponse->getStatusCode(),
             'Expected 200 got ' . $patchEmailsResponse->getStatusCode());
         //check if it is json
-        $this->assertJson(
-            $patchEmailsResponse->getContent(),
-            'Expected valid JSON result');
+        $this->assertJson($patchEmailsResponse->getContent(), 'Expected valid JSON result');
         //check content-type
         $this->assertEquals(
             'application/json',
@@ -181,7 +179,8 @@ class CustomerInfoRequestControllerTest extends WebTestCase
         $toDate = $newDate->modify('+2 day');
         $toDate = $toDate->format('Y-m-d');
         /* Test get all with from and to */
-        $client->request('GET', $getAllEndpoint . $format . '?from=' . $fromDate . '&to=' . $toDate, [], [], $jwtHeader);
+        $client->request('GET', $getAllEndpoint.$format.'?from='.$fromDate.'&to='.$toDate,
+            [], [], $jwtHeader);
         $getAllDateResponse = $client->getResponse();
         //check status code
         $this->assertEquals(
