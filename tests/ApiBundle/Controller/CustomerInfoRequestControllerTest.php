@@ -75,20 +75,23 @@ class CustomerInfoRequestControllerTest extends WebTestCase
             array(
                 'admin_email_sent' => 1,
                 'client_email_sent' => 1
-            ));
+            )
+        );
         $patchEmailsResponse = $client->getResponse();
         //check status code
         $this->assertEquals(
             '200',
             $patchEmailsResponse->getStatusCode(),
-            'Expected 200 got ' . $patchEmailsResponse->getStatusCode());
+            'Expected 200 got ' . $patchEmailsResponse->getStatusCode()
+        );
         //check if it is json
         $this->assertJson($patchEmailsResponse->getContent(), 'Expected valid JSON result');
         //check content-type
         $this->assertEquals(
             'application/json',
             $patchEmailsResponse->headers->get('content-type'),
-            'Expected application/json got ' . $patchEmailsResponse->headers->get('content-type'));
+            'Expected application/json got ' . $patchEmailsResponse->headers->get('content-type')
+        );
         $emailsJsonResponse = json_decode($patchEmailsResponse->getContent());
         $this->assertTrue(
             \DateTime::createFromFormat(\DateTime::ATOM, $emailsJsonResponse->admin_email_sent_date) !== false
@@ -102,46 +105,48 @@ class CustomerInfoRequestControllerTest extends WebTestCase
             array(
                 'admin_email_sent' => 0,
                 'client_email_sent' => 0
-            ));
+            )
+        );
         $patchEmailsResponse = $client->getResponse();
         //check status code
         $this->assertEquals(
             '200',
             $patchEmailsResponse->getStatusCode(),
-            'Expected 200 got ' . $patchEmailsResponse->getStatusCode());
+            'Expected 200 got ' . $patchEmailsResponse->getStatusCode()
+        );
         //check if it is json
-        $this->assertJson(
-            $patchEmailsResponse->getContent(),
-            'Expected valid JSON result');
+        $this->assertJson($patchEmailsResponse->getContent(), 'Expected valid JSON result');
         //check content-type
         $this->assertEquals(
             'application/json',
             $patchEmailsResponse->headers->get('content-type'),
-            'Expected application/json got ' . $patchEmailsResponse->headers->get('content-type'));
+            'Expected application/json got ' . $patchEmailsResponse->headers->get('content-type')
+        );
         $emailsJsonResponse = json_decode($patchEmailsResponse->getContent());
         $this->assertNull($emailsJsonResponse->admin_email_sent_date);
         $this->assertNull($emailsJsonResponse->client_email_sent_date);
+
         /* Test for non existing id */
         $patchSentEmailsEndpoint = $client->getContainer()->get('router')->generate(
             'api_patch_customerinforequests_sentemails',
-            array('id' => 1001));
+            array('id' => 1001)
+        );
         $client->request('PATCH', $patchSentEmailsEndpoint . $format,
             array(
                 'admin_email_sent' => 0,
                 'client_email_sent' => 0
-            ));
+            )
+        );
         $patchEmailsResponse = $client->getResponse();
         //check status code
         $this->assertEquals(
             '404',
             $patchEmailsResponse->getStatusCode(),
-            'Expected 404 got ' . $patchEmailsResponse->getStatusCode());
+            'Expected 404 got ' . $patchEmailsResponse->getStatusCode()
+        );
 
         /* Login required for further calls */
-        $client->request('POST', '/login', [
-            '_username' => 'test',
-            '_password' => 'test'
-        ]);
+        $client->request('POST', '/login', ['_username' => 'test', '_password' => 'test']);
         $loginResponse = json_decode($client->getResponse()->getContent());
         $loginToken = $loginResponse->token;
         $jwtHeader = ['HTTP_Authorization' => 'Bearer ' . $loginToken];
@@ -154,22 +159,23 @@ class CustomerInfoRequestControllerTest extends WebTestCase
         $this->assertEquals(
             '200',
             $getAllResponse->getStatusCode(),
-            'Expected 200 got ' . $getAllResponse->getStatusCode());
+            'Expected 200 got ' . $getAllResponse->getStatusCode()
+        );
         //check if it is json
-        $this->assertJson(
-            $getAllResponse->getContent(),
-            'Expected valid JSON result');
+        $this->assertJson($getAllResponse->getContent(), 'Expected valid JSON result');
         //check content-type
         $this->assertEquals(
             'application/json',
             $getAllResponse->headers->get('content-type'),
-            'Expected application/json got ' . $getAllResponse->headers->get('content-type'));
+            'Expected application/json got ' . $getAllResponse->headers->get('content-type')
+        );
         $getAllJsonResponse = json_decode($getAllResponse->getContent());
         //check if new CustomerInfoRequest is listed
         $this->assertEquals(
             $postJsonResponse->id,
             $getAllJsonResponse[0]->id,
-            'Expected ' . $postJsonResponse->id . ' got ' . $getAllJsonResponse[0]->id);
+            'Expected ' . $postJsonResponse->id . ' got ' . $getAllJsonResponse[0]->id
+        );
         $this->assertEquals(1, $getAllResponse->headers->get('X-Total-Count'));
 
         $getAllDate = $getAllJsonResponse[0]->created;
@@ -180,13 +186,15 @@ class CustomerInfoRequestControllerTest extends WebTestCase
         $toDate = $toDate->format('Y-m-d');
         /* Test get all with from and to */
         $client->request('GET', $getAllEndpoint.$format.'?from='.$fromDate.'&to='.$toDate,
-            [], [], $jwtHeader);
+            [], [], $jwtHeader
+        );
         $getAllDateResponse = $client->getResponse();
         //check status code
         $this->assertEquals(
             '200',
             $getAllDateResponse->getStatusCode(),
-            'Expected 200 got ' . $getAllDateResponse->getStatusCode());
+            'Expected 200 got ' . $getAllDateResponse->getStatusCode()
+        );
         //check if it is json
         $this->assertJson(
             $getAllDateResponse->getContent(),
@@ -195,12 +203,14 @@ class CustomerInfoRequestControllerTest extends WebTestCase
         $this->assertEquals(
             'application/json',
             $getAllDateResponse->headers->get('content-type'),
-            'Expected application/json got ' . $getAllDateResponse->headers->get('content-type'));
+            'Expected application/json got ' . $getAllDateResponse->headers->get('content-type')
+        );
         //check if anything is listed
         $this->assertGreaterThan(
             0,
             count(json_decode($getAllDateResponse->getContent())),
-            'Expected result greater than 0');
+            'Expected result greater than 0'
+        );
 
         /* Test Get One endpoint by new CustomerInfoRequest Id */
         $client->request('GET', $getEndpoint . $format, [], [], $jwtHeader);
@@ -209,48 +219,56 @@ class CustomerInfoRequestControllerTest extends WebTestCase
         $this->assertEquals(
             '200',
             $getResponse->getStatusCode(),
-            'Expected 200 got ' . $getResponse->getStatusCode());
+            'Expected 200 got ' . $getResponse->getStatusCode()
+        );
         //check if it is json
-        $this->assertJson(
-            $getResponse->getContent(),
-            'Expected valid JSON result');
+        $this->assertJson($getResponse->getContent(), 'Expected valid JSON result');
         //check content-type
         $this->assertEquals(
             'application/json',
             $getResponse->headers->get('content-type'),
-            'Expected application/json got ' . $getResponse->headers->get('content-type'));
+            'Expected application/json got ' . $getResponse->headers->get('content-type')
+        );
         $getJsonResponse = json_decode($getResponse->getContent());
         //check if new CustomerInfoRequest is listed
         $this->assertEquals(
             $postJsonResponse->id,
             $getJsonResponse->id,
-            'Expected ' . $postJsonResponse->id . ' got ' . $getJsonResponse->id);
+            'Expected ' . $postJsonResponse->id . ' got ' . $getJsonResponse->id
+        );
         //check status
         $this->assertEquals(
             CustomerInfoRequest::STATUS_TBP, $getJsonResponse->status,
-            'Expected ' . CustomerInfoRequest::STATUS_TBP . ' got ' . $getJsonResponse->status);
+            'Expected ' . CustomerInfoRequest::STATUS_TBP . ' got ' . $getJsonResponse->status
+        );
         /* Test for non existing id */
         $getEndpoint = $client->getContainer()->get('router')->generate('api_get_customerinforequest',
-            array('id' => 1001));
+            array('id' => 1001)
+        );
         $client->request('GET', $getEndpoint . $format, [], [], $jwtHeader);
         $getResponse = $client->getResponse();
         //check status code
         $this->assertEquals(
             '404',
             $getResponse->getStatusCode(),
-            'Expected 404 got ' . $getResponse->getStatusCode());
+            'Expected 404 got ' . $getResponse->getStatusCode()
+        );
 
         /* Test Patch Status */
         $client->request('PATCH', $patchEndpoint . $format,
             array(
                 'status' => CustomerInfoRequest::STATUS_RTC
-            ), [], $jwtHeader);
+            ),
+            [],
+            $jwtHeader
+        );
         $patchResponse = $client->getResponse();
         //check status code
         $this->assertEquals(
             '200',
             $patchResponse->getStatusCode(),
-            'Expected 200 got ' . $patchResponse->getStatusCode());
+            'Expected 200 got ' . $patchResponse->getStatusCode()
+        );
         //check if it is json
         $this->assertJson(
             $patchResponse->getContent(),
@@ -259,7 +277,8 @@ class CustomerInfoRequestControllerTest extends WebTestCase
         $this->assertEquals(
             'application/json',
             $patchResponse->headers->get('content-type'),
-            'Expected application/json got ' . $patchResponse->headers->get('content-type'));
+            'Expected application/json got ' . $patchResponse->headers->get('content-type')
+        );
         $patchJsonResponse = json_decode($patchResponse->getContent());
         //check status
         $this->assertEquals(
@@ -267,19 +286,22 @@ class CustomerInfoRequestControllerTest extends WebTestCase
             'Expected ' . CustomerInfoRequest::STATUS_RTC . ' got ' . $patchJsonResponse->status);
         /* Test for non existing id */
         $patchEndpoint = $client->getContainer()->get('router')->generate('api_patch_customerinforequests',
-            array('id' => 1001));
+            array('id' => 1001)
+        );
         $client->request('PATCH', $patchEndpoint . $format,
             array(
                 'status' => CustomerInfoRequest::STATUS_RTC
-            ), [], $jwtHeader);
+            ),
+            [],
+            $jwtHeader
+        );
         $getResponse = $client->getResponse();
         //check status code
         $this->assertEquals(
             '404',
             $getResponse->getStatusCode(),
-            'Expected 404 got ' . $getResponse->getStatusCode());
-
-
+            'Expected 404 got ' . $getResponse->getStatusCode()
+        );
     }
 
     protected function tearDown()

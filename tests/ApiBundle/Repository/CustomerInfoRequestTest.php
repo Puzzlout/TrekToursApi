@@ -56,10 +56,10 @@ class CustomerInfoRequestTest extends KernelTestCase
         $this->assertCount(1, $customerInfoRequests['items']);
 
         //test for current time interval
-        $from = $this->dateTimeNow->format('Y-m-d');
-        $to = $this->dateTimeNow->add(date_interval_create_from_date_string('30 days'))->format('Y-m-d');
+        $fromDate = $this->dateTimeNow->format('Y-m-d');
+        $toDate = $this->dateTimeNow->add(date_interval_create_from_date_string('30 days'))->format('Y-m-d');
         $customerInfoRequests = $this->entityManager->getRepository('ApiBundle:CustomerInfoRequest')
-            ->findAllWithFilters(0, 5, $from, $to);
+            ->findAllWithFilters(0, 5, $fromDate, $toDate);
         $this->assertCount(5, $customerInfoRequests['items']);
 
         //check order of dates
