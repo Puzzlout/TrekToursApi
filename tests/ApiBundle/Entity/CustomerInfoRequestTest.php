@@ -157,12 +157,12 @@ class CustomerInfoRequestTest extends \PHPUnit_Framework_Testcase
     }
 
     public function testSetAdminEmailSentDate()
-{
-    $date = new \DateTime('now');
-    $returnObject = $this->customerInfoRequest->setAdminEmailSentDate($date);
-    $this->assertInstanceOf('ApiBundle\Entity\CustomerInfoRequest', $returnObject);
-    $this->assertEquals($this->customerInfoRequest->getAdminEmailSentDate(), $date);
-}
+    {
+        $date = new \DateTime('now');
+        $returnObject = $this->customerInfoRequest->setAdminEmailSentDate($date);
+        $this->assertInstanceOf('ApiBundle\Entity\CustomerInfoRequest', $returnObject);
+        $this->assertEquals($this->customerInfoRequest->getAdminEmailSentDate(), $date);
+    }
 
     public function testGetAdminEmailSentDate()
     {

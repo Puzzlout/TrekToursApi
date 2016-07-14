@@ -19,6 +19,6 @@ class RestExceptionHandlerTest extends \PHPUnit_Framework_Testcase
         $returnArray = $this->restExceptionHandler->wrap($data);
         $this->assertNotEmpty($returnArray);
         $this->assertArrayHasKey('message', $returnArray);
-        $this->assertEquals('test exception' ,$returnArray['message']);
+        $this->assertEquals('test exception', $returnArray['message']);
     }
 }

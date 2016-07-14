@@ -67,10 +67,10 @@ class CustomerInfoRequestTest extends KernelTestCase
             $customerInfoRequests['items'][0]->getCreated()->getTimestamp());
 
         //test for previous time interval
-        $to = $this->dateTimeNow->sub(date_interval_create_from_date_string('6 days'))->format('Y-m-d');
-        $from = $this->dateTimeNow->sub(date_interval_create_from_date_string('6 days'))->format('Y-m-d');
+        $toDate = $this->dateTimeNow->sub(date_interval_create_from_date_string('6 days'))->format('Y-m-d');
+        $fromDate = $this->dateTimeNow->sub(date_interval_create_from_date_string('6 days'))->format('Y-m-d');
         $customerInfoRequests = $this->entityManager->getRepository('ApiBundle:CustomerInfoRequest')
-            ->findAllWithFilters(0, 5, $from, $to);
+            ->findAllWithFilters(0, 5, $fromDate, $toDate);
         $this->assertCount(0, $customerInfoRequests['items']);
     }
 
@@ -84,12 +84,13 @@ class CustomerInfoRequestTest extends KernelTestCase
     }
 
     /**
+     * @param \Doctrine\ORM\EntityManager $entityManager
      * @param array $tables Name of the tables which will be truncated.
      * @param bool $cascade
      * @return void
      */
-    private function truncateTables($em, $tables = array(), $cascade = false) {
-        $connection = $em->getConnection();
+    private function truncateTables($entityManager, $tables = array(), $cascade = false) {
+        $connection = $entityManager->getConnection();
         $platform = $connection->getDatabasePlatform();
         $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 0;');
         foreach ($tables as $name) {
