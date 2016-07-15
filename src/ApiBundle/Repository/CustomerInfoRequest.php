@@ -24,7 +24,7 @@ class CustomerInfoRequest extends EntityRepository
         {
             $queryBuilder = $queryBuilder->andWhere('cir.created <= :to')->setParameter('to', $createdTo);
         }
-        $query = $queryBuilder->setMaxResults($limit)->setFirstResult($offset)->orderBy('cir.created','DESC')
+        $query = $queryBuilder->setMaxResults($limit)->setFirstResult($offset)->orderBy('cir.created', 'DESC')
             ->getQuery();
         $paginator = new Paginator($query, false);
         $count = count($paginator);

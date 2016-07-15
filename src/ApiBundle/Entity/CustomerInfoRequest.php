@@ -80,10 +80,26 @@ class CustomerInfoRequest
     /**
      * @var boolean
      *
-     * @ORM\Column(name="has_sent_copy_to_client", type="boolean")
+     * @ORM\Column(name="send_copy_to_client", type="boolean")
      * @Serializer\Groups({"details"})
      */
-    private $hasSentCopyToClient;
+    private $sendCopyToClient;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="admin_email_sent_date", type="datetime", nullable=true)
+     * @Serializer\Groups({"list", "details"})
+     */
+    protected $adminEmailSentDate;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="client_email_sent_date", type="datetime", nullable=true)
+     * @Serializer\Groups({"list", "details"})
+     */
+    protected $clientEmailSentDate;
 
     /**
      * @var \DateTime
@@ -308,26 +324,74 @@ class CustomerInfoRequest
     }
 
     /**
-     * Set hasSentCopyToClient
+     * Set sendCopyToClient
      *
-     * @param boolean $hasSentCopyToClient
+     * @param boolean $sendCopyToClient
      *
      * @return CustomerInfoRequest
      */
-    public function setHasSentCopyToClient($hasSentCopyToClient)
+    public function setSendCopyToClient($sendCopyToClient)
     {
-        $this->hasSentCopyToClient = $hasSentCopyToClient;
+        $this->sendCopyToClient = $sendCopyToClient;
 
         return $this;
     }
 
     /**
-     * Get hasSentCopyToClient
+     * Get sendCopyToClient
      *
      * @return boolean
      */
-    public function getHasSentCopyToClient()
+    public function getSendCopyToClient()
     {
-        return $this->hasSentCopyToClient;
+        return $this->sendCopyToClient;
+    }
+
+    /**
+     * Set adminEmailSentDate
+     *
+     * @param \DateTime $adminEmailSentDate
+     *
+     * @return CustomerInfoRequest
+     */
+    public function setAdminEmailSentDate($adminEmailSentDate)
+    {
+        $this->adminEmailSentDate = $adminEmailSentDate;
+
+        return $this;
+    }
+
+    /**
+     * Get adminEmailSentDate
+     *
+     * @return \DateTime
+     */
+    public function getAdminEmailSentDate()
+    {
+        return $this->adminEmailSentDate;
+    }
+
+    /**
+     * Set clientEmailSentDate
+     *
+     * @param \DateTime $clientEmailSentDate
+     *
+     * @return CustomerInfoRequest
+     */
+    public function setClientEmailSentDate($clientEmailSentDate)
+    {
+        $this->clientEmailSentDate = $clientEmailSentDate;
+
+        return $this;
+    }
+
+    /**
+     * Get clientEmailSentDate
+     *
+     * @return \DateTime
+     */
+    public function getClientEmailSentDate()
+    {
+        return $this->clientEmailSentDate;
     }
 }
