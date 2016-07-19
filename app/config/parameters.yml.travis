@@ -3,12 +3,12 @@ parameters:
     database_host: 127.0.0.1
     database_port: null
     database_name: trektoursapi
-    database_user: root
+    database_user: travis
     database_password: null
     mailer_transport: smtp
-    mailer_host: 'mail.supremecluster.com'
-    mailer_user: 'noreply@puzzlout.com'
-    mailer_password: '3PPVte6bn0'
+    mailer_host: 127.0.0.1
+    mailer_user: ~
+    mailer_password: ~
     secret: ThisTokenIsNotSoSecretChangeIt
     jwt_private_key_path: '%kernel.root_dir%/../var/jwt/private.pem'
     jwt_public_key_path: '%kernel.root_dir%/../var/jwt/public.pem'
