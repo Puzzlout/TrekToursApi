@@ -139,4 +139,50 @@ class CustomerInfoRequestTest extends \PHPUnit_Framework_Testcase
         $this->customerInfoRequest->setUpdated($date);
         $this->assertEquals($this->customerInfoRequest->getUpdated(), $date);
     }
+
+    public function testSetSendCopyToClient()
+    {
+        $returnObject = $this->customerInfoRequest->setSendCopyToClient(false);
+        $this->assertInstanceOf('ApiBundle\Entity\CustomerInfoRequest', $returnObject);
+        $this->assertFalse($returnObject->getSendCopyToClient());
+        $returnObject = $this->customerInfoRequest->setSendCopyToClient(true);
+        $this->assertInstanceOf('ApiBundle\Entity\CustomerInfoRequest', $returnObject);
+        $this->assertTrue($returnObject->getSendCopyToClient());
+    }
+
+    public function testGetSendCopyToClient()
+    {
+        $this->customerInfoRequest->setSendCopyToClient(false);
+        $this->assertFalse($this->customerInfoRequest->getSendCopyToClient());
+    }
+
+    public function testSetAdminEmailSentDate()
+    {
+        $date = new \DateTime('now');
+        $returnObject = $this->customerInfoRequest->setAdminEmailSentDate($date);
+        $this->assertInstanceOf('ApiBundle\Entity\CustomerInfoRequest', $returnObject);
+        $this->assertEquals($this->customerInfoRequest->getAdminEmailSentDate(), $date);
+    }
+
+    public function testGetAdminEmailSentDate()
+    {
+        $date = new \DateTime('now');
+        $this->customerInfoRequest->setAdminEmailSentDate($date);
+        $this->assertEquals($this->customerInfoRequest->getAdminEmailSentDate(), $date);
+    }
+
+    public function testSetClientEmailSentDate()
+    {
+        $date = new \DateTime('now');
+        $returnObject = $this->customerInfoRequest->setClientEmailSentDate($date);
+        $this->assertInstanceOf('ApiBundle\Entity\CustomerInfoRequest', $returnObject);
+        $this->assertEquals($this->customerInfoRequest->getClientEmailSentDate(), $date);
+    }
+
+    public function testGetClientEmailSentDate()
+    {
+        $date = new \DateTime('now');
+        $this->customerInfoRequest->setClientEmailSentDate($date);
+        $this->assertEquals($this->customerInfoRequest->getClientEmailSentDate(), $date);
+    }
 }
