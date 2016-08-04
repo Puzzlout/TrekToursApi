@@ -160,7 +160,9 @@ $minorProblems = $symfonyRequirements->getFailedRecommendations();
 
                         <?php if (count($majorProblems)): ?>
                             <h2 class="ko">Major problems</h2>
-                            <p>Major problems have been detected and <strong>must</strong> be fixed before continuing:</p>
+                            <p>
+                                Major problems have been detected and <strong>must</strong> be fixed before continuing:
+                            </p>
                             <ol>
                                 <?php foreach ($majorProblems as $problem): ?>
                                     <li><?php echo $problem->getTestMessage() ?>
@@ -173,8 +175,8 @@ $minorProblems = $symfonyRequirements->getFailedRecommendations();
                         <?php if (count($minorProblems)): ?>
                             <h2>Recommendations</h2>
                             <p>
-                                <?php if (count($majorProblems)): ?>Additionally, to<?php else: ?>To<?php endif; ?> enhance your Symfony experience,
-                                it’s recommended that you fix the following:
+                                <?php if (count($majorProblems)): ?>Additionally, to<?php else: ?>To<?php endif; ?> 
+                                enhance your Symfony experience, it’s recommended that you fix the following:
                             </p>
                             <ol>
                                 <?php foreach ($minorProblems as $problem): ?>
@@ -188,7 +190,8 @@ $minorProblems = $symfonyRequirements->getFailedRecommendations();
                         <?php if ($symfonyRequirements->hasPhpIniConfigIssue()): ?>
                             <p id="phpini">*
                                 <?php if ($symfonyRequirements->getPhpIniConfigPath()): ?>
-                                    Changes to the <strong>php.ini</strong> file must be done in "<strong><?php echo $symfonyRequirements->getPhpIniConfigPath() ?></strong>".
+                                    Changes to the <strong>php.ini</strong> file must be done in "
+                                    <strong><?php echo $symfonyRequirements->getPhpIniConfigPath() ?></strong>".
                                 <?php else: ?>
                                     To change settings, create a "<strong>php.ini</strong>".
                                 <?php endif; ?>
@@ -196,7 +199,9 @@ $minorProblems = $symfonyRequirements->getFailedRecommendations();
                         <?php endif; ?>
 
                         <?php if (!count($majorProblems) && !count($minorProblems)): ?>
-                            <p class="ok">All checks passed successfully. Your system is ready to run Symfony applications.</p>
+                            <p class="ok">
+                            All checks passed successfully. Your system is ready to run Symfony applications.
+                            </p>
                         <?php endif; ?>
 
                         <ul class="symfony-install-continue">
