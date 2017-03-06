@@ -86,7 +86,10 @@ fos_user:
     db_driver: orm # other valid values are 'mongodb', 'couchdb' and 'propel'
     firewall_name: main
     user_class: ApiBundle\Entity\User
-
+    from_email:
+            address: admin@example.com
+            sender_name: Admin
+            
 nelmio_cors:
     defaults:
         allow_credentials: false
